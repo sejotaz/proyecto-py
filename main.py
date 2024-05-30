@@ -8,6 +8,7 @@ from src.routes import users_routers, auth_routers
 #Instalar todas las dependencias pip install -r requirements.txt
 #DATABASE= mongodb+srv://Sejotaz:prueba123@mongodb1.ndvxls9.mongodb.net/
 # 2:33:42
+# Generar un token random openssl rand -hex 32
 
 app = FastAPI()
 

@@ -5,4 +5,5 @@ python-dotenv
 pydantic
 uuid
 python-jose
-passlib
+pyjwt[crypto]
+passlib[bcrypt]
