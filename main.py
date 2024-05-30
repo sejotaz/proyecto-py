@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-from src.database import db
+from database import db
 from src.routes import users_routers, auth_routers
 
-
+#Crear un entorno virtual python -m venv venv
 #Activar el entorno virtaul venv\Scripts\activate
 #Encender el backend uvicorn main:app --reload
 #Instalar todas las dependencias pip install -r requirements.txt
