@@ -16,11 +16,16 @@ async def users(id: int):
 
 @router.post("/create", response_model=User, status_code=status.HTTP_201_CREATED)
 async def create_user(user: User):
-    user_dict = dict(user)
-    del user_dict["id"]
+    try:
+        user_dict = user.model_dump()
+        del user_dict["id"]
 
-    id = db.users.insert_one(user_dict).inserted_id
+        id = db.users.insert_one(user_dict).inserted_id
+        # id = result
 
-    new_user = user_schema(db.users.find_one({"_id": id}))
+        new_user = user_schema(db.users.find_one({"_id": id}))
 
-    return User(**new_user)
+        return User(**new_user)
+    except Exception as e:
+        print("Error al crear el usuario:", e)
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Error al crear el usuario")
