@@ -9,6 +9,16 @@ class User(BaseModel):
     username: str
     email: str
     password: str
-    disabled: Optional[bool] = None
+    disabled: Optional[bool] = False
     role: str
+    isRemove: Optional[bool] = False
 
+class UserUpdate(BaseModel):
+    name: Optional[str]
+    last_name: Optional[str]
+    username: Optional[str]
+    email: Optional[str]
+    password: Optional[str]
+    disabled: Optional[bool]
+    role: Optional[str]
+    isRemove: Optional[bool]
