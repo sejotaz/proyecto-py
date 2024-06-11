@@ -14,11 +14,11 @@ class User(BaseModel):
     isRemove: Optional[bool] = False
 
 class UserUpdate(BaseModel):
-    name: Optional[str]
-    last_name: Optional[str]
-    username: Optional[str]
-    email: Optional[str]
-    password: Optional[str]
-    disabled: Optional[bool]
-    role: Optional[str]
-    isRemove: Optional[bool]
+    name: Optional[str] = None
+    last_name: Optional[str] = None
+    username: Optional[str] = None
+    email: Optional[str] = None
+    password: Optional[str] = None
+    disabled: Optional[bool] = None
+    role: Optional[str] = None
+    isRemove: Optional[bool] = None

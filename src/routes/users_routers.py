@@ -4,6 +4,8 @@ from src.schemas.user import user_schema, users_schema
 from database import db, client
 from bson import ObjectId
 from typing import Dict, Optional
+from src.entities.userEntity import UserResponse
+
 
 router = APIRouter(prefix="/users", tags=["users"], responses={status.HTTP_404_NOT_FOUND: {"message": "Not Found"}})
 
@@ -45,7 +47,7 @@ async def create_user(user: User):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Error al crear el usuario")
 
 
-@router.patch("/update/{id}", response_model=User)
+@router.patch("/update/{id}", response_model=UserResponse)
 async def update_user(id: str ,user: UserUpdate):
 
     update_data: Dict[str, Optional[str]] = user.model_dump(exclude_unset=True)
@@ -53,19 +55,31 @@ async def update_user(id: str ,user: UserUpdate):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid user ID")
 
     try:
-        result = db.users.find_one_and_update({"_id": ObjectId(id)}, {"$set": update_data}, return_document=True)
-        
-        if result is None:
+        update_user = db.users.find_one_and_update({"_id": ObjectId(id)},
+            {"$set": update_data},
+            return_document=True
+        )
+
+        if update_user is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     except Exception as e:
         print("Error al actualizar el usuario:", e)
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Error al actualizar el usuario")
     
-    return User(**result)
+    return UserResponse(
+        id=str(update_user["_id"]),
+        name=update_user.get("name"),
+        last_name=update_user.get("last_name"),
+        username=update_user.get("username"),
+        email=update_user.get("email"),
+        disabled=update_user.get("disabled"),
+        role=update_user.get("role"),
+        isRemove=update_user.get("isRemove")
+    )
 
 
-@router.delete("/delete/{id}",  status_code=status.HTTP_204_NO_CONTENT)
+@router.patch("/delete/{id}",  status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(id: str):
     try:
         db.users.find_one_and_update({"_id": ObjectId(id)}, {"$set": {"isRemove": True}})
