@@ -1,24 +1,26 @@
 from src.models.ProductsModel import Product, ProductUpdate
-from src.schemas.product import product_schema
+from src.schemas.product import product_schema, products_schema
 from database import db
 from bson import ObjectId
 from typing import Dict, Optional
 from src.entities.productEntity import ProductResponse
 from fastapi import APIRouter, HTTPException, status
 
-router = APIRouter(prefix="/product", tags=["Product"], responses={404: {"message": "Not found"}})
+router = APIRouter(prefix="/products", tags=["Product"], responses={404: {"message": "Not found"}})
 
 @router.get("/query", response_model=list[Product])
 async def products():
-  return product_schema(db.products.find({"isRemove": False}))
+  return products_schema(db.products.find({"isRemove": False}))
 
 @router.get("/query/{id}", response_model=Product)
 async def product(id: str):
   return product_schema(db.products.find_one({"_id": ObjectId(id)}))
 
+
+#Crear un usuario
 @router.post("/create", response_model=Product, status_code=status.HTTP_201_CREATED)
 async def create_product(product: Product):
-   if type(search_product("name", product.name)) == Product:
+   if type(search_product("name_product", product.name_product)) == Product:
        raise HTTPException(
            status_code=status.HTTP_404_NOT_FOUND, detail="El producto ya existe")
    try: 
@@ -30,6 +32,7 @@ async def create_product(product: Product):
       new_product = product_schema(db.products.find_one({"_id": id}))
 
       return Product(**new_product)
+   
    except Exception as e:
        print("Error al crear el producto:", e)
        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Error al crear el producto")
@@ -61,7 +64,7 @@ async def update_product(id: str, product: ProductUpdate):
         isRemove=update_product.get("isRemove")
     )
 
-@router.delete("/delete/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.patch("/delete/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_product(id: str):
     try:
         db.products.find_one_and_update({"_id": ObjectId(id)}, {"$set": {"isRemove": True}})
@@ -73,9 +76,12 @@ async def delete_product(id: str):
 
 #Funciones para validar
 def search_product(field: str, key):
-
     try:
         product = db.products.find_one({field: key})
-        return Product(**product_schema(product))
-    except:
-        return {"error": "No se ha encontrado el usuario"}
+        print(f"Resultado de búsqueda para {field} = {key}: {product}")
+        if product:
+            return Product(**product_schema(product))
+        return None
+    except Exception as e:
+        print(f"Error al buscar el producto: {e}")
+        return None

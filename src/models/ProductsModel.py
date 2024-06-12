@@ -7,9 +7,9 @@ class Product(BaseModel):
     name_product: str
     price: float
     quantity: int
-    buy: bool
-    isAvaliable: bool
-    isRemove: bool
+    buy: Optional[bool] = False
+    isAvaliable: Optional[bool] = False
+    isRemove: Optional[bool] = False
 
 class ProductUpdate(BaseModel):
     id: Optional[str] = None
