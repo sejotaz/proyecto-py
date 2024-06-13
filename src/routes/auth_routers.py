@@ -10,7 +10,7 @@ from src.schemas.user import user_schema
 from src.tools.funciones import search_user
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_DURATION = 2
+ACCESS_TOKEN_DURATION = 10
 SECRET = "1234"
 
 oauth2 = OAuth2PasswordBearer(tokenUrl="login")
@@ -76,9 +76,16 @@ async def login(form: OAuth2PasswordRequestForm = Depends()):
     
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_DURATION)
 
-    access_token = {"sub": user_dict["username"], "exp": expire}
+    access_token_data = {
+        "sub": user_dict["username"],
+        "email": user_dict["email"],
+        "role": user_dict["role"],
+        "exp": expire
+    }
 
-    return {"access_token": jwt.encode(access_token, SECRET ,algorithm=ALGORITHM), "token_type": "bearer"}
+    access_token = jwt.encode(access_token_data, SECRET, algorithm=ALGORITHM)
+
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 @router.get("/users/me")

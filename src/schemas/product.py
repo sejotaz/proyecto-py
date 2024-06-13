@@ -3,6 +3,7 @@ def product_schema(product) -> dict:
     "id": str(product["_id"]),
     "name_product": product["name_product"],
     "price": product["price"],
+    "img": product["img"],
     "quantity": product["quantity"]
   }
 
