@@ -65,13 +65,13 @@ async def create_user(user: User):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Error al crear el usuario")
 
 @router.post("/login")
-async def login(form: OAuth2PasswordRequestForm = Depends()):
-    user = db.users.find_one({"username": form.username})
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = db.users.find_one({"username": form_data.username})
     if not user:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="El usuario no es correcto")
     
     user_dict = user_schema(user)
-    if not crypt.verify(form.password, user_dict["password"]):
+    if not crypt.verify(form_data.password, user_dict["password"]):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Contraseña incorrecta")
     
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_DURATION)

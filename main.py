@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from database import db
 from src.routes import users_routers, auth_routers, products_routers
+from fastapi.middleware.cors import CORSMiddleware
 
 #Crear un entorno virtual python -m venv venv
 #Activar el entorno virtaul venv\Scripts\activate
@@ -11,6 +12,14 @@ from src.routes import users_routers, auth_routers, products_routers
 # Generar un token random openssl rand -hex 32
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],  
+    allow_headers=["*"],  
+)
 
 # Routers
 app.include_router(users_routers.router)
